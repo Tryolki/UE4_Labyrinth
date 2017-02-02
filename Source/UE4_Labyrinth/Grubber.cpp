@@ -27,6 +27,14 @@ void UGrubber::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s missing physics handle component"), *GetOwner()->GetName())
 	}
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if(InputComponent == nullptr)
+		UE_LOG(LogTemp, Error, TEXT("%s missing input component"), *GetOwner()->GetName())
+	else
+	{
+		InputComponent->BindAction("Grub", IE_Pressed, this, &UGrubber::Grub);
+		InputComponent->BindAction("Grub", IE_Released, this, &UGrubber::Release);
+	}
 	
 }
 
@@ -69,4 +77,15 @@ void UGrubber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 		UE_LOG(LogTemp, Warning, TEXT("Hit object: %s"), *(HitActor->GetName()));
 	// ...
 }
+
+void UGrubber::Grub()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grub pressed"));
+}
+
+void UGrubber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grub released"));
+}
+
 
