@@ -33,10 +33,35 @@ void UGrubber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 	FVector PlayerLocation;
 	FRotator PlayerRotator;
 	Player->GetPlayerViewPoint(PlayerLocation, PlayerRotator);
-	UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation: %s"),
+	/*UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation: %s"),
 		*PlayerLocation.ToString(),
 		*PlayerRotator.ToString()
+	);*/
+	FVector LineTraceEnd = PlayerLocation + PlayerRotator.Vector() * Reach;
+	DrawDebugLine(
+		GetWorld(),
+		PlayerLocation,
+		LineTraceEnd,
+		FColor(255,0,0),
+		false,
+		0.f,
+		0.f,
+		10.f
 	);
+	///false mean that we use simply collider
+	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
+	/// Linetrace(ray-cast) uot reach distance
+	FHitResult ObjectTrace;
+	GetWorld()->LineTraceSingleByObjectType(
+		ObjectTrace,
+		PlayerLocation,
+		LineTraceEnd,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		TraceParameters
+		);
+	AActor * HitActor = ObjectTrace.GetActor();
+	if(HitActor)
+		UE_LOG(LogTemp, Warning, TEXT("Hit object: %s"), *(HitActor->GetName()));
 	// ...
 }
 

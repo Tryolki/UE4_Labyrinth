@@ -23,5 +23,6 @@ public:
 
 private:
 	APlayerController * Player;
+	float Reach = 100.f;
 	
 };
