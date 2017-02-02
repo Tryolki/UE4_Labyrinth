@@ -21,7 +21,12 @@ void UGrubber::BeginPlay()
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("Grubber start"));
 	Player = GetWorld()->GetFirstPlayerController();
-	// ...
+	// Looked for attached physics handle
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s missing physics handle component"), *GetOwner()->GetName())
+	}
 	
 }
 
