@@ -53,19 +53,38 @@ void UGrubber::FindPhysicsComponent()
 void UGrubber::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
+	FVector PlayerLocation;
+	FRotator PlayerRotator;
+	Player->GetPlayerViewPoint(PlayerLocation, PlayerRotator);
+	FVector LineTraceEnd = PlayerLocation + PlayerRotator.Vector() * Reach;
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+	}
 }
 
 void UGrubber::Grub()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grub pressed"));
-	AActor * HitActor = GetFirstPhysicsBodyInReach().GetActor();
-	if(HitActor)
+	auto HitResult = GetFirstPhysicsBodyInReach();
+	AActor * HitActor = HitResult.GetActor();
+	if (HitActor)
+	{
 		UE_LOG(LogTemp, Warning, TEXT("Hit object: %s"), *(HitActor->GetName()));
+		auto ComponentToGrub = HitResult.GetComponent();
+		PhysicsHandle->GrabComponentAtLocationWithRotation(
+			ComponentToGrub,
+			NAME_None,
+			ComponentToGrub->GetOwner()->GetActorLocation(),
+			ComponentToGrub->GetOwner()->GetActorRotation()
+		);
+	}
 }
 
 void UGrubber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grub released"));
+	PhysicsHandle->ReleaseComponent();
 }
 
 const FHitResult UGrubber::GetFirstPhysicsBodyInReach()
