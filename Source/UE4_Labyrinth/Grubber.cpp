@@ -22,20 +22,30 @@ void UGrubber::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("Grubber start"));
 	Player = GetWorld()->GetFirstPlayerController();
 	// Looked for attached physics handle
-	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s missing physics handle component"), *GetOwner()->GetName())
-	}
+	FindPhysicsComponent();
+	SetupInputComponent();
+	
+}
+
+void UGrubber::SetupInputComponent()
+{
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
-	if(InputComponent == nullptr)
+	if (InputComponent == nullptr)
 		UE_LOG(LogTemp, Error, TEXT("%s missing input component"), *GetOwner()->GetName())
 	else
 	{
 		InputComponent->BindAction("Grub", IE_Pressed, this, &UGrubber::Grub);
 		InputComponent->BindAction("Grub", IE_Released, this, &UGrubber::Release);
 	}
-	
+}
+
+void UGrubber::FindPhysicsComponent()
+{
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s missing physics handle component"), *GetOwner()->GetName())
+	}
 }
 
 
@@ -43,24 +53,37 @@ void UGrubber::BeginPlay()
 void UGrubber::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
+}
+
+void UGrubber::Grub()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grub pressed"));
+	AActor * HitActor = GetFirstPhysicsBodyInReach().GetActor();
+	if(HitActor)
+		UE_LOG(LogTemp, Warning, TEXT("Hit object: %s"), *(HitActor->GetName()));
+}
+
+void UGrubber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grub released"));
+}
+
+const FHitResult UGrubber::GetFirstPhysicsBodyInReach()
+{
 	FVector PlayerLocation;
 	FRotator PlayerRotator;
 	Player->GetPlayerViewPoint(PlayerLocation, PlayerRotator);
-	/*UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation: %s"),
-		*PlayerLocation.ToString(),
-		*PlayerRotator.ToString()
-	);*/
 	FVector LineTraceEnd = PlayerLocation + PlayerRotator.Vector() * Reach;
-	DrawDebugLine(
-		GetWorld(),
-		PlayerLocation,
-		LineTraceEnd,
-		FColor(255,0,0),
-		false,
-		0.f,
-		0.f,
-		10.f
-	);
+	//DrawDebugLine(
+	//	GetWorld(),
+	//	PlayerLocation,
+	//	LineTraceEnd,
+	//	FColor(255, 0, 0),
+	//	false,
+	//	0.f,
+	//	0.f,
+	//	10.f
+	//);
 	///false mean that we use simply collider
 	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
 	/// Linetrace(ray-cast) uot reach distance
@@ -71,21 +94,8 @@ void UGrubber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 		LineTraceEnd,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParameters
-		);
-	AActor * HitActor = ObjectTrace.GetActor();
-	if(HitActor)
-		UE_LOG(LogTemp, Warning, TEXT("Hit object: %s"), *(HitActor->GetName()));
-	// ...
-}
-
-void UGrubber::Grub()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Grub pressed"));
-}
-
-void UGrubber::Release()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Grub released"));
+	);
+	return ObjectTrace;
 }
 
 
