@@ -34,4 +34,6 @@ private:
 	void Grub();
 	void Release();
 	const FHitResult GetFirstPhysicsBodyInReach();
+	FVector GetReachLineStart();
+	FVector GetReachLineEnd();
 };

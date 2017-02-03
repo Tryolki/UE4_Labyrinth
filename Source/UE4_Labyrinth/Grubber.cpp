@@ -10,8 +10,6 @@ UGrubber::UGrubber()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 
@@ -53,13 +51,10 @@ void UGrubber::FindPhysicsComponent()
 void UGrubber::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
-	FVector PlayerLocation;
-	FRotator PlayerRotator;
-	Player->GetPlayerViewPoint(PlayerLocation, PlayerRotator);
-	FVector LineTraceEnd = PlayerLocation + PlayerRotator.Vector() * Reach;
+	
 	if (PhysicsHandle->GrabbedComponent)
 	{
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+		PhysicsHandle->SetTargetLocation(GetReachLineEnd());
 	}
 }
 
@@ -89,10 +84,6 @@ void UGrubber::Release()
 
 const FHitResult UGrubber::GetFirstPhysicsBodyInReach()
 {
-	FVector PlayerLocation;
-	FRotator PlayerRotator;
-	Player->GetPlayerViewPoint(PlayerLocation, PlayerRotator);
-	FVector LineTraceEnd = PlayerLocation + PlayerRotator.Vector() * Reach;
 	//DrawDebugLine(
 	//	GetWorld(),
 	//	PlayerLocation,
@@ -109,12 +100,28 @@ const FHitResult UGrubber::GetFirstPhysicsBodyInReach()
 	FHitResult ObjectTrace;
 	GetWorld()->LineTraceSingleByObjectType(
 		ObjectTrace,
-		PlayerLocation,
-		LineTraceEnd,
+		GetReachLineStart(),
+		GetReachLineEnd(),
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParameters
 	);
 	return ObjectTrace;
+}
+
+FVector UGrubber::GetReachLineStart()
+{	
+	FVector PlayerLocation;
+	FRotator PlayerRotator;
+	Player->GetPlayerViewPoint(PlayerLocation, PlayerRotator);
+	return PlayerLocation;
+}
+
+FVector UGrubber::GetReachLineEnd()
+{
+	FVector PlayerLocation;
+	FRotator PlayerRotator;
+	Player->GetPlayerViewPoint(PlayerLocation, PlayerRotator);
+	return PlayerLocation + PlayerRotator.Vector() * Reach;
 }
 
 
