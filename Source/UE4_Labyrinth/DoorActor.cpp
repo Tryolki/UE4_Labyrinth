@@ -2,7 +2,7 @@
 
 #include "UE4_Labyrinth.h"
 #include "DoorActor.h"
-
+#include <string>
 
 // Sets default values for this component's properties
 UDoorActor::UDoorActor()
@@ -17,7 +17,6 @@ UDoorActor::UDoorActor()
 void UDoorActor::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerActor = GetWorld()->GetFirstPlayerController()->GetPawn();
 	DoorActor = GetOwner();
 }
 
@@ -26,7 +25,7 @@ void UDoorActor::BeginPlay()
 void UDoorActor::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
-	if (DoorTrigger->IsOverlappingActor(PlayerActor))
+	if (GetTotalMassOfTheActorsOnPlate() > MaxMass)
 	{
 		OpenDoor(DeltaTime);
 		LastOpenDoorTime = GetWorld()->GetTimeSeconds();
@@ -56,5 +55,20 @@ void UDoorActor::CloseDoor(float DeltaTime)
 		DoorActor->SetActorRotation(DoorRotator);
 	}
 
+}
+
+float UDoorActor::GetTotalMassOfTheActorsOnPlate()
+{
+	float TotallMass = 0.f;
+	float ActorMass = 0.f;
+	TArray<AActor *> OverlappingActors;
+	DoorTrigger->GetOverlappingActors(OverlappingActors);
+	for (const auto & Actor : OverlappingActors)
+	{
+		ActorMass = Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		TotallMass += ActorMass;
+		UE_LOG(LogTemp, Warning, TEXT("%s on the trigger volume. Mass: %s"), *Actor->GetName(), *FString::SanitizeFloat(ActorMass));
+	}
+	return TotallMass;
 }
 

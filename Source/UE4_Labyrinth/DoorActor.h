@@ -33,10 +33,12 @@ private:
 	ATriggerVolume * DoorTrigger;
 
 	UPROPERTY(VisibleAnywhere)
-	AActor * PlayerActor;
-		
+	float MaxMass = 75.f;
+
 	AActor * DoorActor;
 
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
+	float GetTotalMassOfTheActorsOnPlate();
+
 };
