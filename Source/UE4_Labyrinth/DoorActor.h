@@ -32,6 +32,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume * DoorTrigger;
 
+	UPROPERTY(EditAnywhere)
+	TArray<ATriggerVolume *> DoorTriggers;
 	UPROPERTY(VisibleAnywhere)
 	float MaxMass = 75.f;
 

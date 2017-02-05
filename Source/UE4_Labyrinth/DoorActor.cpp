@@ -62,12 +62,15 @@ float UDoorActor::GetTotalMassOfTheActorsOnPlate()
 	float TotallMass = 0.f;
 	float ActorMass = 0.f;
 	TArray<AActor *> OverlappingActors;
-	DoorTrigger->GetOverlappingActors(OverlappingActors);
-	for (const auto & Actor : OverlappingActors)
+	for (const auto & Trigger : DoorTriggers)
 	{
-		ActorMass = Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
-		TotallMass += ActorMass;
-		UE_LOG(LogTemp, Warning, TEXT("%s on the trigger volume. Mass: %s"), *Actor->GetName(), *FString::SanitizeFloat(ActorMass));
+		Trigger->GetOverlappingActors(OverlappingActors);
+		for (const auto & Actor : OverlappingActors)
+		{
+			ActorMass = Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+			TotallMass += ActorMass;
+			UE_LOG(LogTemp, Warning, TEXT("%s on the trigger volume. Mass: %s"), *Actor->GetName(), *FString::SanitizeFloat(ActorMass));
+		}
 	}
 	return TotallMass;
 }
