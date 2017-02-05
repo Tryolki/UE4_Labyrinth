@@ -5,6 +5,8 @@
 #include "Components/ActorComponent.h"
 #include "DoorActor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenRequest);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE4_LABYRINTH_API UDoorActor : public UActorComponent
@@ -29,8 +31,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float MaxDoorAngle = 85.0f;
-	UPROPERTY(EditAnywhere)
-	ATriggerVolume * DoorTrigger;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnOpenRequest OnOpenRequest;
 
 	UPROPERTY(EditAnywhere)
 	TArray<ATriggerVolume *> DoorTriggers;

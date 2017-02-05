@@ -38,12 +38,13 @@ void UDoorActor::TickComponent( float DeltaTime, ELevelTick TickType, FActorComp
 
 void UDoorActor::OpenDoor(float DeltaTime)
 {
-	auto DoorRotator = DoorActor->GetActorRotation();
+	OnOpenRequest.Broadcast();
+	/*auto DoorRotator = DoorActor->GetActorRotation();
 	if (DoorRotator.Yaw < MaxDoorAngle)
 	{
 		DoorRotator.Yaw += DeltaTime * 10;
 		DoorActor->SetActorRotation(DoorRotator);
-	}
+	}*/
 }
 
 void UDoorActor::CloseDoor(float DeltaTime)
@@ -64,6 +65,7 @@ float UDoorActor::GetTotalMassOfTheActorsOnPlate()
 	TArray<AActor *> OverlappingActors;
 	for (const auto & Trigger : DoorTriggers)
 	{
+		if (Trigger == nullptr) return 0.f;
 		Trigger->GetOverlappingActors(OverlappingActors);
 		for (const auto & Actor : OverlappingActors)
 		{

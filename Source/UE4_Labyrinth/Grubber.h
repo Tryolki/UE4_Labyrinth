@@ -26,7 +26,7 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 private:
-	APlayerController * Player;
+	APlayerController * Player = nullptr;
 	UPROPERTY(VisibleAnywhere)
 	float Reach = 100.f;
 	UPhysicsHandleComponent * PhysicsHandle = nullptr;
