@@ -67,12 +67,13 @@ void UGrubber::Grub()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hit object: %s"), *(HitActor->GetName()));
 		auto ComponentToGrub = HitResult.GetComponent();
-		PhysicsHandle->GrabComponentAtLocationWithRotation(
-			ComponentToGrub,
-			NAME_None,
-			ComponentToGrub->GetOwner()->GetActorLocation(),
-			ComponentToGrub->GetOwner()->GetActorRotation()
-		);
+		if(PhysicsHandle != nullptr)
+			PhysicsHandle->GrabComponentAtLocationWithRotation(
+				ComponentToGrub,
+				NAME_None,
+				ComponentToGrub->GetOwner()->GetActorLocation(),
+				ComponentToGrub->GetOwner()->GetActorRotation()
+			);
 	}
 }
 
