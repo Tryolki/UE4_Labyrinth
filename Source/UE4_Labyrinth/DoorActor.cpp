@@ -27,35 +27,21 @@ void UDoorActor::TickComponent( float DeltaTime, ELevelTick TickType, FActorComp
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 	if (GetTotalMassOfTheActorsOnPlate() > MaxMass)
 	{
-		OpenDoor(DeltaTime);
-		LastOpenDoorTime = GetWorld()->GetTimeSeconds();
+		OpenDoor();
 	}
 	else {
-		if (GetWorld()->GetTimeSeconds() > LastOpenDoorTime + CloseWaitTime)
-			CloseDoor(DeltaTime);
+		CloseDoor();
 	}
 }
 
-void UDoorActor::OpenDoor(float DeltaTime)
+void UDoorActor::OpenDoor()
 {
 	OnOpenRequest.Broadcast();
-	/*auto DoorRotator = DoorActor->GetActorRotation();
-	if (DoorRotator.Yaw < MaxDoorAngle)
-	{
-		DoorRotator.Yaw += DeltaTime * 10;
-		DoorActor->SetActorRotation(DoorRotator);
-	}*/
 }
 
-void UDoorActor::CloseDoor(float DeltaTime)
+void UDoorActor::CloseDoor()
 {
-	auto DoorRotator = DoorActor->GetActorRotation();
-	if (DoorRotator.Yaw > 0)
-	{
-		DoorRotator.Yaw -= DeltaTime * 10;
-		DoorActor->SetActorRotation(DoorRotator);
-	}
-
+	OnCloseRequest.Broadcast();
 }
 
 float UDoorActor::GetTotalMassOfTheActorsOnPlate()

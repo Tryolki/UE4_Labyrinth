@@ -6,6 +6,7 @@
 #include "DoorActor.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenRequest);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCloseRequest);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -24,26 +25,23 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 private:
-	UPROPERTY(EditAnywhere)
-	float CloseWaitTime = 0.0f;
-
-	float LastOpenDoorTime = 0.0f;
-
-	UPROPERTY(EditAnywhere)
-	float MaxDoorAngle = 85.0f;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnOpenRequest OnOpenRequest;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnCloseRequest OnCloseRequest;
+
 	UPROPERTY(EditAnywhere)
 	TArray<ATriggerVolume *> DoorTriggers;
-	UPROPERTY(VisibleAnywhere)
-	float MaxMass = 75.f;
+
+	UPROPERTY(EditAnywhere)
+	float MaxMass = 30.f;
 
 	AActor * DoorActor;
 
-	void OpenDoor(float DeltaTime);
-	void CloseDoor(float DeltaTime);
+	void OpenDoor();
+	void CloseDoor();
 	float GetTotalMassOfTheActorsOnPlate();
 
 };
